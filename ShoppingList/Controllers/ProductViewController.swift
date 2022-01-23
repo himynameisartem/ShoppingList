@@ -15,7 +15,6 @@ class ProductViewController: UITableViewController {
     var productArray = [Item]()
     var titleBar = ""
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,13 +24,9 @@ class ProductViewController: UITableViewController {
     
     // MARK: - Table view data source
     
-    
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return productArray.count
     }
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "productCell", for: indexPath)
@@ -39,6 +34,17 @@ class ProductViewController: UITableViewController {
         cell.textLabel?.text = productArray[indexPath.row].title
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let action = UIContextualAction(style: .destructive, title: "Удалить") { (_, _, completion) in
+            self.context.delete(self.productArray[indexPath.row])
+            self.productArray.remove(at: indexPath.row)
+            self.saveItems()
+        }
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+        return configuration
     }
     
     @IBAction func addButton(_ sender: Any) {

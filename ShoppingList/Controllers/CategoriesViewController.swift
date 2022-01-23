@@ -39,6 +39,19 @@ class CategoriesViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let action = UIContextualAction(style: .destructive, title: "Удалить") { (_, _, completion) in
+            self.context.delete(self.categoryArray[indexPath.row])
+            self.categoryArray.remove(at: indexPath.row)
+            self.saveItems()
+        }
+        
+        let configuration = UISwipeActionsConfiguration(actions: [action])
+      
+        return configuration
+    }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let indexPath = tableView.indexPathForSelectedRow {
