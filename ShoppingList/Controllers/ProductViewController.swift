@@ -12,6 +12,11 @@ class ProductViewController: UITableViewController {
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    var selectedCategory: Category? {
+        didSet{
+            loadItems()
+        }
+    }
     var productArray = [Item]()
     var titleBar = ""
     
@@ -19,7 +24,7 @@ class ProductViewController: UITableViewController {
         super.viewDidLoad()
         
         title = titleBar
-        loadItems()
+//        loadItems()
     }
     
     // MARK: - Table view data source
@@ -32,6 +37,7 @@ class ProductViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "productCell", for: indexPath)
         
         cell.textLabel?.text = productArray[indexPath.row].title
+        cell.accessoryType = productArray[indexPath.row].done ? .checkmark : .none
         
         return cell
     }
@@ -47,6 +53,12 @@ class ProductViewController: UITableViewController {
         return configuration
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        productArray[indexPath.row].done = !productArray[indexPath.row].done
+        saveItems()
+        
+    }
+    
     @IBAction func addButton(_ sender: Any) {
         
         var textField = UITextField()
@@ -55,7 +67,8 @@ class ProductViewController: UITableViewController {
             let newItem = Item(context: self.context)
             
             newItem.title = textField.text!
-            
+            newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.productArray.append(newItem)
             self.saveItems()
         }
@@ -80,6 +93,9 @@ class ProductViewController: UITableViewController {
     }
     
     func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+        let predicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        request.predicate = predicate
         
         do {
             productArray = try context.fetch(request)

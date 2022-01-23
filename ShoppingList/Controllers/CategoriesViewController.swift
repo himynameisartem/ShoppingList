@@ -56,8 +56,10 @@ class CategoriesViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let indexPath = tableView.indexPathForSelectedRow {
             
+            
             let productVC = segue.destination as! ProductViewController
             productVC.titleBar = categoryArray[indexPath.row].name!
+            productVC.selectedCategory = categoryArray[indexPath.row]
         }
     }
     
