@@ -100,6 +100,8 @@ class CategoriesViewController: UITableViewController {
     
     func loadItems(with request: NSFetchRequest<Category> = Category.fetchRequest(), predicate: NSPredicate? = nil) {
         
+      
+        
         do {
             categoryArray = try context.fetch(request)
         } catch {
@@ -110,5 +112,31 @@ class CategoriesViewController: UITableViewController {
     }
 }
 
+extension CategoriesViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Category> = Category.fetchRequest()
+        
+        let predicate = NSPredicate(format: "name CONTAINS %@", searchBar.text!)
+        request.predicate = predicate
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
+        
+        loadItems(with: request)
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+    
+}
 
 
